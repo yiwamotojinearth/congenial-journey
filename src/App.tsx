@@ -4,13 +4,14 @@ type Todo = {
   id: number;
   text: string;
   isEditing: boolean;
+  completed:boolean;
 };
 
 function App () { 
   const [todos, setTodos] = useState<Todo[]>([
-    { id:1, text: 'Reactを勉強する', isEditing: false },
-    { id:2, text: 'TODOアプリを作る',isEditing: false },
-    { id:3, text: 'ちゃんと完成させる', isEditing: false },
+    { id:1, text: 'Reactを勉強する', isEditing: false,completed:false },
+    { id:2, text: 'TODOアプリを作る',isEditing: false,completed:false },
+    { id:3, text: 'ちゃんと完成させる', isEditing: false,completed:false },
   ]);
 
   const [input, setInput] = useState('');
@@ -39,6 +40,23 @@ function App () {
       )
     );
   };
+
+const deleteTodo = (id: number) => {
+  setTodos(todos =>
+    todos.filter(todo => todo.id !== id)
+  );
+};
+
+const toggleComplete = (id: number) => {
+  setTodos(todos =>
+    todos.map(todo =>
+    todo.id === id
+      ? { ...todo, completed: !todo.completed }
+      : todo
+    )
+  );
+};
+
   return (
     <>
       <h1>React TODO App</h1>
@@ -59,6 +77,7 @@ function App () {
               id: Date.now(),
               text: input,
               isEditing: false,
+              completed: false,
             },
           ]);
           setInput('');
@@ -84,9 +103,29 @@ function App () {
                 autoFocus
               />
             ) : (
-              <span onDoubleClick={() => startEdit(todo.id)}>
+              <>
+              <input
+              type = "checkbox"
+              checked = {todo.completed}
+              onChange={() => toggleComplete(todo.id)}
+              />
+              
+              <span onDoubleClick={() => startEdit(todo.id)}
+                style={{
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  color: todo.completed ? '#aaa' : '#000',
+                  marginLeft: '8px',
+                }}
+              >
                 {todo.text}
               </span>
+              <button
+              onClick={() => deleteTodo(todo.id)}
+              style={{ marginLeft: '8px' }}
+              >
+                削除
+              </button>
+              </>
             )}
           </li>
         ))}
